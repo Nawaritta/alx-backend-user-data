@@ -4,8 +4,20 @@ import logging
 import os
 import re
 from typing import List
-
 import mysql.connector
+
+
+PII_FIELDS = ('ssn', 'email', 'phone', 'password')
+
+
+def filter_datum(fields: List[str], redaction: str, message: str,
+                 separator: str) -> str:
+    """Return the log message obfuscated."""
+    return re.sub(
+        f'({"|".join(fields)})=[^\\{separator}]+',
+        f'\\1={redaction}',
+        message
+    )
 
 
 class RedactingFormatter(logging.Formatter):
@@ -24,35 +36,20 @@ class RedactingFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         """Format the log record."""
         message = super().format(record)
-        return self.filter_message(message)
-
-    def filter_message(self, message: str) -> str:
-        """Filter sensitive data in the message."""
-        return re.sub(
-            f'({"|".join(self.fields)})=[^\\{self.SEPARATOR}]+',
-            f'\\1={self.REDACTION}',
-            message
-        )
+        return filter_datum(self.fields, self.REDACTION, message,
+                            self.SEPARATOR)
 
 
-def filter_datum(fields: List[str], redaction: str, message: str,
-                 separator: str) -> str:
-    """Return the log message obfuscated."""
-    return re.sub(
-        f'({"|".join(fields)})=[^\\{separator}]+',
-        f'\\1={redaction}',
-        message
-    )
-
-
-def get_logger() -> logging.Logger:
-    """Return a logging.Logger object."""
+def get_logger():
+    """Returns a logging.Logger object."""
     logger = logging.getLogger("user_data")
-    stream_handler = logging.StreamHandler()
-    stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
     logger.setLevel(logging.INFO)
     logger.propagate = False
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
     logger.addHandler(stream_handler)
+
     return logger
 
 
