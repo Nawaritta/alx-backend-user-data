@@ -3,7 +3,7 @@
 import logging
 import os
 import re
-from typing import List
+from typing import List, NoReturn
 import mysql.connector
 from mysql.connector.connection import MySQLConnection
 
@@ -69,15 +69,14 @@ def get_db() -> MySQLConnection:
     )
 
 
-def main():
+def main() -> NoReturn:
     """Obtain a database connection using get_db and retrieve all rows
     in the users table and display each row under a filtered format"""
     db = get_db()
     cursor = db.cursor()
     cursor.execute("SELECT * FROM users;")
 
-    formatter = RedactingFormatter(fields=("name", "email",
-                                           "phone", "ssn", "password"))
+    formatter = RedactingFormatter(fields=PII_FIELDS)
     logger = logging.getLogger("user_data")
     logger.setLevel(logging.INFO)
     handler = logging.StreamHandler()
