@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """This module contains filter_datum function"""
-from typing import List
-import re
 import logging
-from typing import Tuple
 import os
+import re
+from typing import List
+
+import mysql.connector
 
 
 class RedactingFormatter(logging.Formatter):
-    """ Redacting Formatter class
-    """
+    """ Redacting Formatter class """
 
     REDACTION = "***"
     FORMAT = "[HOLBERTON] %(name)s %(levelname)s %(asctime)-15s: %(message)s"
@@ -17,7 +17,7 @@ class RedactingFormatter(logging.Formatter):
     SEPARATOR = ";"
 
     def __init__(self, fields: List[str]):
-        """constractor"""
+        """Constructor"""
         super(RedactingFormatter, self).__init__(self.FORMAT)
         self.fields = fields
 
@@ -26,10 +26,18 @@ class RedactingFormatter(logging.Formatter):
         message = super().format(record)
         return self.filter_message(message)
 
+    def filter_message(self, message: str) -> str:
+        """Filter sensitive data in the message."""
+        return re.sub(
+            f'({"|".join(self.fields)})=[^\\{self.SEPARATOR}]+',
+            f'\\1={self.REDACTION}',
+            message
+        )
+
 
 def filter_datum(fields: List[str], redaction: str, message: str,
                  separator: str) -> str:
-    """returns the log message obfuscated"""
+    """Return the log message obfuscated."""
     return re.sub(
         f'({"|".join(fields)})=[^\\{separator}]+',
         f'\\1={redaction}',
@@ -38,7 +46,7 @@ def filter_datum(fields: List[str], redaction: str, message: str,
 
 
 def get_logger() -> logging.Logger:
-    """returns a logging.Logger object."""
+    """Return a logging.Logger object."""
     logger = logging.getLogger("user_data")
     stream_handler = logging.StreamHandler()
     stream_handler.setFormatter(RedactingFormatter(PII_FIELDS))
@@ -49,7 +57,7 @@ def get_logger() -> logging.Logger:
 
 
 def get_db():
-    """returns a connector to the database"""
+    """Return a connector to the database."""
     username = os.getenv("PERSONAL_DATA_DB_USERNAME", "root")
     password = os.getenv("PERSONAL_DATA_DB_PASSWORD", "")
     host = os.getenv("PERSONAL_DATA_DB_HOST", "localhost")
@@ -63,12 +71,8 @@ def get_db():
     )
 
 
-RedactingFormatter = __import__('filtered_logger').RedactingFormatter
-get_db = __import__('filtered_logger').get_db
-
-
 def main():
-    """obtain a database connection using get_db and retrieve all rows
+    """Obtain a database connection using get_db and retrieve all rows
     in the users table and display each row under a filtered format"""
     db = get_db()
     cursor = db.cursor()
