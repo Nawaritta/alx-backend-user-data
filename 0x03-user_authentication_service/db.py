@@ -56,7 +56,7 @@ class DB:
 
 
     def update_user(self, user_id: int, **kwa: Union[str, int]) -> None:
-        """update user"""
+        """updates a user"""
 
         DBSession = self._session
         user_to_update = self.find_user_by(id=user_id)
