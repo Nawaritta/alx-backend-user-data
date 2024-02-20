@@ -6,6 +6,7 @@ Base = declarative_base()
 
 
 class User(Base):
+    """User base model"""
 
     __tablename__ = "users"
 
