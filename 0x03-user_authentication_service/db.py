@@ -10,6 +10,7 @@ from sqlalchemy.exc import InvalidRequestError
 from user import Base, User
 from typing import Dict, Union
 
+
 class DB:
     """DB class
     """
@@ -31,7 +32,7 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email:str, hashed_password:str) -> User:
+    def add_user(self, email: str, hashed_password: str) -> User:
         """saves the user to the database"""
         new_user = User(email=email, hashed_password=hashed_password)
         DBSession = self._session
@@ -53,7 +54,6 @@ class DB:
             raise
         except InvalidRequestError:
             raise
-
 
     def update_user(self, user_id: int, **kwa: Union[str, int]) -> None:
         """updates a user"""
