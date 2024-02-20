@@ -1,17 +1,16 @@
 #!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Main file
 """
-from auth import Auth
 
-email = 'bob@bob.com'
-password = 'MyPwdOfBob'
-auth = Auth()
+from db import DB
+from user import User
 
-auth.register_user(email, password)
+my_db = DB()
 
-print(auth.valid_login(email, password))
+user_1 = my_db.add_user("test@test.com", "SuperHashedPwd")
+print(user_1.id)
 
-print(auth.valid_login(email, "WrongPwd"))
-
-print(auth.valid_login("unknown@email", password))
+user_2 = my_db.add_user("test1@test.com", "SuperHashedPwd1")
+print(user_2.id)
