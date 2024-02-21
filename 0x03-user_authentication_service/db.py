@@ -45,16 +45,18 @@ class DB:
 
         return new_user
 
-    def find_user_by(self, **kwa: Dict) -> User:
+    def find_user_by(self, **kwa) -> User:
         """returns the first row found in the users table as filtered
         by the method's input arguments"""
 
-        DBSession = self._session
+        #DBSession = self._session
         try:
-            user = DBSession.query(User).filter_by(**kwa).first()
+            user = self._session.query(User).filter_by(**kwa).one()
             if user is None:
                 raise NoResultFound()
             return user
+        except NoResultFound:
+            raise NoResultFound()
         except InvalidRequestError:
             raise InvalidRequestError()
 
