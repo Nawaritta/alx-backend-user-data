@@ -44,20 +44,20 @@ class DB:
 
         return new_user
 
-    def find_user_by(self, **kwa: Union[str, int]) -> User:
+    def find_user_by(self, **kwa: Union[int, str]) -> User:
         """returns the first row found in the users table as filtered
         by the method's input arguments"""
 
         DBSession = self._session
         try:
-            user = DBSession.query(User).filter_by(**kwa).one()
+            user = DBSession.query(User).filter_by(**kwa).first()
             if user is None:
                 raise NoResultFound
             return user
         except NoResultFound:
-            raise
+            raise NoResultFound
         except InvalidRequestError:
-            raise
+            raise InvalidRequestError
 
     def update_user(self, user_id: int, **kwa: Union[str, int]) -> None:
         """updates a user"""
