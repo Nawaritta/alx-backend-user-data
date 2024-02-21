@@ -74,7 +74,7 @@ def get_reset_password_token() -> str:
     except Exception:
         abort(403)
     response = jsonify({"email": email, "reset_token": new_token})
-    return response
+    return response, 200
 
 
 if __name__ == "__main__":
