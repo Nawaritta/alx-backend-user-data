@@ -49,9 +49,8 @@ class DB:
         """returns the first row found in the users table as filtered
         by the method's input arguments"""
 
-        #DBSession = self._session
         try:
-            user = self._session.query(User).filter_by(**kwa).one()
+            user = self._session.query(User).filter_by(**kwa).first()
             if user is None:
                 raise NoResultFound()
             return user
