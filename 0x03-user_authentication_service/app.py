@@ -65,7 +65,7 @@ def profile() -> str:
         response = jsonify({"email": user.email})
         return response, 200
 
-    except InvalidRequestError:
+    except Exception:
         abort(403)
 
 
