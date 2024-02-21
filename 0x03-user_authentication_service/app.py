@@ -3,6 +3,7 @@
 
 from flask import Flask, jsonify, request, abort
 from auth import Auth
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
 
 AUTH = Auth()
@@ -34,7 +35,7 @@ def login() -> str:
     password = request.form.get("password")
     try:
         AUTH.valid_login(email, password)
-    except NoResultFound:
+    except InvalidRequestError:
         return abort(401)
 
     session_id = AUTH.create_session(email)
