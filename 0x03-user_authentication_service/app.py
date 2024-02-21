@@ -43,5 +43,39 @@ def login() -> str:
     return abort(401)
 
 
+@app.route("/sessions", methods=["DELETE"], strict_slashes=False)
+def logout() -> str:
+    """user logout"""
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id)
+    if user is not None:
+        AUTH.destroy_session(user.id)
+        return redirect('/')
+    abort(403)
+
+
+@app.route("/profile", methods=["GET"], strict_slashes=False)
+def profile() -> str:
+    """user logout"""
+    session_id = request.cookies.get('session_id')
+    user = AUTH.get_user_from_session_id(session_id)
+    if user is not None:
+        response = jsonify({"email": user.email})
+        return response, 200
+    abort(403)
+
+
+@app.route("/reset_password", methods=["POST"], strict_slashes=False)
+def get_reset_password_token() -> str:
+    """rest password"""
+    email = request.form.get("email")
+    try:
+        new_token = AUTH.get_reset_password_token(email)
+    except Exception:
+        abort(403)
+    response = jsonify({"email": email, "reset_token": new_token})
+    return response
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port="5000")
