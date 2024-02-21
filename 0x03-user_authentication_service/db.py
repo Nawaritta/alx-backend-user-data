@@ -50,9 +50,7 @@ class DB:
 
         DBSession = self._session
         try:
-            user = DBSession.query(User).filter_by(**kwa).first()
-            if user is None:
-                raise NoResultFound()
+            user = DBSession.query(User).filter_by(**kwa).one()
             return user
         except NoResultFound:
             raise NoResultFound()
