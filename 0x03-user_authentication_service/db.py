@@ -5,7 +5,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from sqlalchemy.orm.exc import NoResultFound, InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 from user import Base, User
 from typing import Dict
 
@@ -48,13 +50,19 @@ class DB:
         by the method's input arguments"""
 
         DBSession = self._session
+        for key in kwa.keys():
+            if not hasattr(User, key):
+                raise InvalidRequestError()
+
         try:
             user = DBSession.query(User).filter_by(**kwa).first()
+            if user is None:
+                raise NoResultFound()
             return user
         except NoResultFound:
             raise NoResultFound()
-        except InvalidRequestError:
-            raise InvalidRequestError()
+        #         except InvalidRequestError:
+        #          raise InvalidRequestError()
 
     def update_user(self, user_id: int, **kwa: Dict) -> None:
         """updates a user"""
