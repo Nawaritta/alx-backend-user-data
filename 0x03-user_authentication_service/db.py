@@ -59,10 +59,12 @@ class DB:
         except InvalidRequestError:
             raise InvalidRequestError()
 
-    def update_user(self, user_id: int, **kwa: Dict) -> None:
+    def update_user(self, user_id: int, **kwa) -> None:
         """updates a user"""
 
         user_to_update = self.find_user_by(id=user_id)
+        if user_to_update is None:
+            return
         for key, value in kwa.items():
             if not hasattr(user_to_update, key):
                 raise ValueError
