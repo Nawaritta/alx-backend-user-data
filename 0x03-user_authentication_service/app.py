@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """This module contains flask app"""
 
-from flask import Flask, jsonify, request, abort
+from flask import Flask, jsonify, request, abort, redirect
 from auth import Auth
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
@@ -53,7 +53,9 @@ def logout() -> None:
     if not user:
         abort(403)
     AUTH.destroy_session(user.id)
-    return redirect('/', code=302)
+    response = jsonify({"user": user.id, "message": "logged out"})
+    response.delete_cookie('session_id')
+    return direct('/', code=302)
 
 
 @app.route("/profile", methods=["GET"], strict_slashes=False)
