@@ -58,11 +58,12 @@ class Auth:
 
     def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
         """returns the corresponding User or None."""
-        if session_id is not None:
-            user = self._db.find_user_by(session_id=session_id)
-            if user is not None:
-                return user
-        return None
+        if session_id is None:
+            return None
+        user = self._db.find_user_by(session_id=session_id)
+        if user is None:
+            return None
+        return user
 
     def destroy_session(self, user_id: int) -> None:
         """updates the corresponding user's session ID to None."""
