@@ -68,9 +68,7 @@ class Auth:
         """updates the corresponding user's session ID to None."""
         if user_id is None:
             return None
-        user = self._db.find_user_by(user_id=user_id)
-        if user is not None:
-            self._db.update_user(user.id, session_id=None)
+        self._db.update_user(user_id, session_id=None)
 
     def get_reset_password_token(self, email: str) -> str:
         """takes an email string argument and returns a string."""
