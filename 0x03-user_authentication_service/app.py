@@ -53,7 +53,7 @@ def logout() -> str:
     AUTH.destroy_session(user.id)
     response = jsonify({"user": user.id, "message": "logged out"})
     response.delete_cookie('session_id')
-    return direct('/', code=302)
+    return direct('/')
 
 
 @app.route("/profile", methods=["GET"], strict_slashes=False)
