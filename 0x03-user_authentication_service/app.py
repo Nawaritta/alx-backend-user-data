@@ -44,12 +44,10 @@ def login() -> str:
 
 
 @app.route("/sessions", methods=["DELETE"], strict_slashes=False)
-def logout() -> None:
+def logout() -> str:
     """user logout"""
-    user = None
     session_id = request.cookies.get("session_id")
-    if session_id:
-        user = AUTH.get_user_from_session_id(session_id)
+    user = AUTH.get_user_from_session_id(session_id)
     if not user:
         abort(403)
     AUTH.destroy_session(user.id)
@@ -78,10 +76,25 @@ def get_reset_password_token() -> str:
     """rest password"""
     email = request.form.get("email")
     try:
-        new_token = AUTH.get_reset_password_token(email)
+        reset_token = AUTH.get_reset_password_token(email)
     except Exception:
         abort(403)
-    response = jsonify({"email": email, "reset_token": new_token})
+    response = jsonify({"email": email, "reset_token": reset_token})
+    return response, 200
+
+
+@app.route("/reset_password", methods=["PUT"], strict_slashes=False)
+def update_password() -> str:
+    """update password"""
+    email = request.form.get("email")
+    reset_token = request.form.get("reset_token")
+    new_password = request.form.get("new_password")
+    try:
+        AUTH.update_password(reset_token, new_password)
+    except ValueError:
+        abort(403)
+
+    response = jsonify({"email": email, "message": "Password updated"})
     return response, 200
 
 
