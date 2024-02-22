@@ -48,11 +48,11 @@ def logout() -> str:
     """user logout"""
     session_id = request.cookies.get("session_id")
     user = AUTH.get_user_from_session_id(session_id)
-    if not user:
+    if user is None:
         abort(403)
     AUTH.destroy_session(user.id)
-    response = jsonify({"user": user.id, "message": "logged out"})
-    response.delete_cookie('session_id')
+    # response = jsonify({"user": user.id, "message": "logged out"})
+    # response.delete_cookie('session_id')
     return direct('/')
 
 
@@ -76,10 +76,10 @@ def get_reset_password_token() -> str:
     """rest password"""
     email = request.form.get("email")
     try:
-        reset_token = AUTH.get_reset_password_token(email)
+        new_token = AUTH.get_reset_password_token(email)
     except Exception:
         abort(403)
-    response = jsonify({"email": email, "reset_token": reset_token})
+    response = jsonify({"email": email, "reset_token": new_token})
     return response, 200
 
 
