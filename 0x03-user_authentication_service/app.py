@@ -51,9 +51,9 @@ def logout() -> str:
     if user is None:
         abort(403)
     AUTH.destroy_session(user.id)
-    # response = jsonify({"user": user.id, "message": "logged out"})
-    # response.delete_cookie('session_id')
-    return direct('/')
+    response = jsonify({"user": user.id, "message": "logged out"})
+    response.delete_cookie('session_id')
+    return redirect('/')
 
 
 @app.route("/profile", methods=["GET"], strict_slashes=False)
