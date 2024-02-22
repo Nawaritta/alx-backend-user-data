@@ -58,12 +58,11 @@ class Auth:
 
     def get_user_from_session_id(self, session_id: str) -> Union[User, None]:
         """returns the corresponding User or None."""
-        if session_id is None:
-            return None
-        user = self._db.find_user_by(session_id=session_id)
-        if user is None:
-            return None
-        return user
+        if session_id is not None:
+            user = self._db.find_user_by(session_id=session_id)
+            if user is not None:
+                return user
+        return None
 
     def destroy_session(self, user_id: int) -> None:
         """updates the corresponding user's session ID to None."""
@@ -73,8 +72,9 @@ class Auth:
 
     def get_reset_password_token(self, email: str) -> str:
         """takes an email string argument and returns a string."""
-        user = self._db.find_user_by(email=email)
-        if user is None:
+        try:
+            user = self._db.find_user_by(email=email)
+        except Exception:
             raise ValueError()
         reset_token = _generate_uuid()
         self._db.update_user(user.id, reset_token=reset_token)
@@ -82,7 +82,10 @@ class Auth:
 
     def update_password(self, reset_token: str, password: str) -> None:
         """ updates the password """
-        user = self._db.find_user_by(reset_token=reset_token)
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+        except Exception:
+            raise ValueError()
         if user is None:
             raise ValueError()
         hashed_password = _hash_password(password)
