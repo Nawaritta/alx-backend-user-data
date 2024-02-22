@@ -72,15 +72,12 @@ class Auth:
 
     def get_reset_password_token(self, email: str) -> str:
         """takes an email string argument and returns a string."""
-
-        if email is not None:
-            user = self._db.find_user_by(email=email)
-            if user is None:
-                raise ValueError()
-            reset_token = _generate_uuid()
-            self._db.update_user(user.id, reset_token=reset_token)
-
-            return new_token
+        user = self._db.find_user_by(email=email)
+        if user is None:
+            raise ValueError()
+        reset_token = _generate_uuid()
+        self._db.update_user(user.id, reset_token=reset_token)
+        return reset_token
 
     def update_password(self, reset_token: str, password: str) -> None:
         """ updates the password """
